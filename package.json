@@ -1,0 +1,25 @@
+{
+  "name": "knex-objection-demo",
+  "version": "1.0.0",
+  "description": "a demo for knex-objection",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linchen2chris/knex-objection-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/linchen2chris/knex-objection-demo/issues"
+  },
+  "homepage": "https://github.com/linchen2chris/knex-objection-demo#readme",
+  "dependencies": {
+    "knex": "^0.21.1",
+    "objection": "^2.1.3",
+    "pg": "^8.1.0"
+  }
+}
