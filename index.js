@@ -28,11 +28,29 @@ class Person extends Model {
           to: "persons.parentId",
         },
       },
+
+      scores: {
+        relation: Model.HasManyRelation,
+        modelClass: Score,
+        join: {
+          from: "persons.id",
+          to: "scores.studentId",
+        },
+      },
     };
   }
 }
 
+class Score extends Model {
+  static get tableName() {
+    return "scores";
+  }
+}
+
 async function createSchema() {
+  if (await knex.schema.hasTable("scores")) {
+    await knex.schema.dropTable("scores");
+  }
   if (await knex.schema.hasTable("persons")) {
     await knex.schema.dropTable("persons");
   }
@@ -43,35 +61,58 @@ async function createSchema() {
     table.jsonb("details");
     table.string("firstName");
   });
+  await knex.schema.createTable("scores", (table) => {
+    table.increments("id").primary();
+    table.integer("studentId").references("persons.id");
+    table.string("key");
+    table.integer("value");
+  });
 }
 
 async function main() {
   const sylvester = await Person.query().insertGraph({
-    firstName: "sylvester",
+    firstName: "first",
     details: {
-      gender: "M",
-      age: 12,
+			math: 89,
+			english: 80,
     },
-    children: { firstName: "saga" },
+    // scores: [
+    //   { key: "math", value: 80 },
+    //   { key: "english", value: 90 },
+    // ],
   });
   await Person.query().insertGraph({
-    firstName: "sylvester",
+    firstName: "second",
     details: {
-      gender: "M",
-      age: 10,
+			math: 88,
+			english: 81
     },
-    children: { firstName: "laga" },
+    // scores: [
+    //   { key: "math", value: 81 },
+    //   { key: "english", value: 82 },
+    // ],
   });
 
-  console.log("Line 61", sylvester);
-  const finduser = await Person.query()
-    .select("persons.*", "children.firstName as childName")
-    .innerJoin("persons as children", "children.parentId", "persons.id")
-    .where("persons.firstName", "sylvester")
-    .withGraphFetched("children")
-    .orderBy("childName");
+  // console.log("Line 61", sylvester);
+  // const finduser = await Person.query()
+  //   .select("persons.*", "children.firstName as childName")
+  //   .innerJoin("persons as children", "children.parentId", "persons.id")
+  //   .where("persons.firstName", "sylvester")
+  //   .withGraphFetched("children")
+  //   .orderBy("childName");
 
-  console.log("Line 64", finduser);
+  // console.log("Line 64", finduser);
+
+  const sortByScore = await Person.query().select().whereRaw("(details->>'math')::INT = 88");
+
+  // .groupBy("persons.id");
+  // const sortByScore = await Person.relatedQuery("scores").for(1);
+  // .intersect(Person.query().select("firstName", {mathScore: "scores.value"}).innerJoin("scores", "scores.studentId", "persons.id").where("scores.key", "math"));
+  // const sortByScore = await Person.query()
+  // 			.select().innerJoin("scores", "scores.studentId", "persons.id").withGraphFetched("scores").groupBy("persons.id");
+  //
+  // const sortByScore = await knex.raw("select persons.id, scores.value as math from persons inner join scores on persons.id = scores.studentid where socres.key = 'math'");
+  console.log("Line 102", sortByScore);
 }
 
 createSchema()
