@@ -64,11 +64,12 @@ async function main() {
   });
 
   console.log("Line 61", sylvester);
-  const finduser = await Person.query().select("children.firstName as childName")
-	innerJoin()
-    .where("firstName", "sylvester")
-    .withGraphFetched("children");
-  // .orderByRaw("details.");
+  const finduser = await Person.query()
+    .select("persons.*", "children.firstName as childName")
+    .innerJoin("persons as children", "children.parentId", "persons.id")
+    .where("persons.firstName", "sylvester")
+    .withGraphFetched("children")
+    .orderBy("childName");
 
   console.log("Line 64", finduser);
 }
