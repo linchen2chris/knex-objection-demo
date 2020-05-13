@@ -73,6 +73,7 @@ async function main() {
   const sylvester = await Person.query().insertGraph({
     firstName: "first",
     details: {
+			firstName: "first",
 			math: 89,
 			english: 80,
     },
@@ -84,6 +85,7 @@ async function main() {
   await Person.query().insertGraph({
     firstName: "second",
     details: {
+			firstName: "SEcond",
 			math: 88,
 			english: 81
     },
@@ -103,7 +105,10 @@ async function main() {
 
   // console.log("Line 64", finduser);
 
-  const sortByScore = await Person.query().select().whereRaw("(details->>'math')::INT = 88");
+  // const sortByScore = await Person.query().where(knex.raw("firstName like '%sec%'")).orWhere("math", ">", 88).from(Person.query().select("firstName", {math: knex.raw("(details->>'math')")}).as("a"));
+	const l = "%sec%";
+  const sortByScore = await Person.query().select("firstName", {math: knex.raw("(details->>'math')::INT")}).whereRaw("lower((details->>'firstName')) like ?", [l]);
+
 
   // .groupBy("persons.id");
   // const sortByScore = await Person.relatedQuery("scores").for(1);
