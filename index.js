@@ -107,7 +107,7 @@ async function main() {
 
   // const sortByScore = await Person.query().where(knex.raw("firstName like '%sec%'")).orWhere("math", ">", 88).from(Person.query().select("firstName", {math: knex.raw("(details->>'math')")}).as("a"));
 	const l = "%sec%";
-  const sortByScore = await Person.query().select("firstName", {math: knex.raw("(details->>'math')::INT")}).whereRaw("lower((details->>'firstName')) like ?", [l]);
+  const sortByScore = await Person.query().select( {math: knex.raw("(details->>'math')::INT")}).whereRaw("lower((details->>'firstName')) like ?", [l]).count();
 
 
   // .groupBy("persons.id");
